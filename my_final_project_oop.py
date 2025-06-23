@@ -37,9 +37,9 @@ def next_turn(snake, food):
     x, y = snake.coordinates[0]
 
     if direction == "up":
-        y += SPACE_SIZE
+        y -= SPACE_SIZE
     elif direction == "down":
-        y -= SPACE_SIZE 
+        y += SPACE_SIZE 
     elif direction == "left":
         x -= SPACE_SIZE
     elif direction == "right":
@@ -47,9 +47,15 @@ def next_turn(snake, food):
 
     snake.coordinates.insert(0, (x, y))
 
-    square = canvas.create_rectagnle(x, y, x + SPACE_SIZE, y +SPACE_SIZE, fill=SNAKE_COLOR)
+    square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y +SPACE_SIZE, fill=SNAKE_COLOR)
 
     snake.squares.insert(0, square)
+
+    del snake.coordinates[-1]
+    canvas.delete(snake.squares[-1])
+    del snake.squares[-1]
+
+    window.after(SPEED, next_turn, snake, food)
 
 def change_direction():
     pass
@@ -63,16 +69,15 @@ def game_over():
 window = Tk()
 window.title("snake game")
 window.resizable(False, False)
+window.configure(bg=BACKGROUND_COLOR)
 
 score = 0 
 direction = 'down'
 
-label = Label(window, text=f"score: {score}",
-              font=('consolas', 40), bg=BACKGROUND_COLOR, fg="white")
+label = Label(window, text=f"score: {score}",font=('consolas', 40), bg=BACKGROUND_COLOR, fg="white")
 label.pack()
 
-canvas = Canvas(window, bg=BACKGROUND_COLOR,
-                height=GAME_HEIGHT, width=GAME_WIDTH)
+canvas = Canvas(window, bg=BACKGROUND_COLOR,height=GAME_HEIGHT, width=GAME_WIDTH)
 canvas.pack()
 window.update()
 
@@ -85,11 +90,15 @@ x = int((screen_width / 2) - (window_width / 2))
 y = int((screen_height / 2) - (window_height / 2))
 
 window.geometry(f"{window_width}x{window_height}+{x}+{y}")
-window.geometry(f"{window_width}x{window_height}+{x}+{y}")
+
+window.bind('<left>', lambda event: change_direction('left'))
+window.bind('<right>', lambda event: change_direction('right'))
+window.bind('<up>', lambda event: change_direction('up'))
+window.bind('<down>', lambda event: change_direction('down'))
+
 
 snake = Snake()
 food = Food()
-
-next_turn(Snake, Food)
+next_turn(snake, food)
 
 window.mainloop()
