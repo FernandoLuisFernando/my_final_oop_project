@@ -16,6 +16,9 @@ high_score = 0
 direction = 'down'
 obstacle = []
 
+def get_random_color():
+        return f'#{random.randint(0, 0xFFFFFF):06x}'
+
 
 def get_random_color():
     return f'#{random.randint(0, 0xFFFFFF):06x}'
@@ -48,9 +51,19 @@ class Food:
         self.coordinates = [x, y]
         canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE,
                            fill=FOOD_COLOR, tag="food")
-        
-    def get_random_color():
-        return f'#{random.randint(0, 0xFFFFFF):06x}'
+
+def create_obstacle(count=5):
+    global obstacle
+    for blocks in range(count):
+        while True:
+            x = random.randint(0, (GAME_WIDTH // SPACE_SIZE) - 1) * SPACE_SIZE
+            y = random.randint(0, (GAME_HEIGHT // SPACE_SIZE) - 1) * SPACE_SIZE
+            if [x, y] not in snake.coordinates and [x, y] != food.coordinates:
+                obstacles.append([x, y])
+                canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE,
+                                        fill=OBSTACLE_COLOR, tag="obstacle")
+                break
+                
 
 def next_turn(snake):
     global food, score 
