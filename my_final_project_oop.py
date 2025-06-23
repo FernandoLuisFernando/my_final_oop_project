@@ -1,9 +1,9 @@
 from tkinter import *
 import random
 
-GAME_WIDTH = 700
-GAME_HEIGHT = 700
-SPEED = 50
+GAME_WIDTH = 900
+GAME_HEIGHT = 900
+SPEED = 100
 SPACE_SIZE = 50
 BODY_PARTS = 3 
 SNAKE_COLOR = "#00FF00"
@@ -24,16 +24,23 @@ class Snake:
             self.squares.append(square)
 
 class Food:
-    
     def __init__(self):
+        while True:
+            x = random.randint(0, (GAME_WIDTH // SPACE_SIZE) - 1) * SPACE_SIZE
+            y = random.randint(0, (GAME_HEIGHT // SPACE_SIZE) - 1) * SPACE_SIZE
 
-        x = random.randint(0, (GAME_WIDTH // SPACE_SIZE) -1) * SPACE_SIZE
-        y = random.randint(0, (GAME_HEIGHT // SPACE_SIZE) -1) * SPACE_SIZE
-        
+            # ✅ Only break if not on the snake's body
+            if [x, y] not in snake.coordinates:
+                break
+
         self.coordinates = [x, y]
-        
-        canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=FOOD_COLOR, tag="food")
-def next_turn(snake, food):
+        canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE,
+                           fill=FOOD_COLOR, tag="food")
+
+
+
+def next_turn(snake):
+    global food  
     x, y = snake.coordinates[0]
 
     if direction == "up":
@@ -47,15 +54,23 @@ def next_turn(snake, food):
 
     snake.coordinates.insert(0, (x, y))
 
-    square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y +SPACE_SIZE, fill=SNAKE_COLOR)
-
+    square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_COLOR)
     snake.squares.insert(0, square)
 
-    del snake.coordinates[-1]
-    canvas.delete(snake.squares[-1])
-    del snake.squares[-1]
+    if x == food.coordinates[0] and y == food.coordinates[1]:
+        global score
+        score += 1
+        label.config(text=f"score: {score}")
 
-    window.after(SPEED, next_turn, snake, food)
+        canvas.delete("food")  # remove the old food
+        food = Food()   
+
+    else:
+        del snake.coordinates[-1]
+        canvas.delete(snake.squares[-1])
+        del snake.squares[-1]
+
+    window.after(SPEED, next_turn, snake)
 
 def change_direction(new_direction):
     global direction
@@ -114,6 +129,6 @@ window.bind("<Down>", lambda event: change_direction("down"))
 
 snake = Snake()
 food = Food()
-next_turn(snake, food)
+next_turn(snake)
 
 window.mainloop()
