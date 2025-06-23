@@ -5,10 +5,26 @@ GAME_WIDTH = 700
 GAME_HEIGHT = 700
 SPEED = 100
 SPACE_SIZE = 50
-BODY_PARTS = 3 
+BODY_PARTS = 3
 SNAKE_COLOR = "#00FF00"
 FOOD_COLOR = "#FF0000"
 BACKGROUND_COLOR = "#000000"
+OBSTACLE_COLOR = "#808080"
+
+score = 0 
+high_score = 0
+direction = 'down'
+obstacle = []
+
+
+def get_random_color():
+    return f'#{random.randint(0, 0xFFFFFF):06x}'
+
+def increases_diffuculty():
+    global SPEED
+    if score % 5 == 0 and SPEED > 20:
+        SPEED -= 5 
+        print(f"Speed has increased")
 
 class Snake:
     def __init__(self):
@@ -32,7 +48,9 @@ class Food:
         self.coordinates = [x, y]
         canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE,
                            fill=FOOD_COLOR, tag="food")
-
+        
+    def get_random_color():
+        return f'#{random.randint(0, 0xFFFFFF):06x}'
 
 def next_turn(snake):
     global food, score 
@@ -88,21 +106,29 @@ def change_direction(new_direction):
             direction = new_direction
 
 
-
 def check_collisions():
     x, y = snake.coordinates[0]
 
-    if x < 0 or x >= GAME_WIDTH or y < 0 or y >= GAME_HEIGHT:
+    if x < 0 or x >= GAME_WIDTH:
+        return True
+    
+    elif y < 0 or y >= GAME_HEIGHT:
+        print("GAME OVER")
         return True
     
     if [x, y] in snake.coordinates[1:]:
         return True
-
+    
+    for body_part in snake.coordinates[1:]:
+        if x == body_part[0] and y == body_part[1]:
+            print("GAME OVER")
+            return True
+    
     return False
 
-
 def game_over():
-    pass
+    canvas.delete(ALL)
+    canvas.create_text(canvas.winfo_width()/2, canvas.winfo_height()/2, font=('consolas', 70), text='GAME OVER', fill='red', tag="GAME OVER")
 
 window = Tk()
 window.title("snake game")
