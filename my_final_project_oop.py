@@ -23,7 +23,7 @@ def get_random_color():
 def get_random_color():
     return f'#{random.randint(0, 0xFFFFFF):06x}'
 
-def increases_diffuculty():
+def increases_difficulty():
     global SPEED
     if score % 5 == 0 and SPEED > 20:
         SPEED -= 5 
@@ -53,7 +53,7 @@ class Food:
                            fill=FOOD_COLOR, tag="food")
 
 def create_obstacle(count=5):
-    global obstacle
+    global obstacles
     for blocks in range(count):
         while True:
             x = random.randint(0, (GAME_WIDTH // SPACE_SIZE) - 1) * SPACE_SIZE
@@ -82,6 +82,11 @@ def next_turn(snake):
 
     square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_COLOR)
     snake.squares.insert(0, square)
+
+    if new_head == food.coordinates:
+        score += 1 
+        increases_difficulty()
+        label.config(text=f"Score: {score} | High Score: {high_score}"))
 
     if x == food.coordinates[0] and y == food.coordinates[1]:
     
