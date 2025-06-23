@@ -1,8 +1,8 @@
 from tkinter import *
 import random
 
-GAME_WIDTH = 900
-GAME_HEIGHT = 900
+GAME_WIDTH = 700
+GAME_HEIGHT = 700
 SPEED = 100
 SPACE_SIZE = 50
 BODY_PARTS = 3 
@@ -13,11 +13,8 @@ BACKGROUND_COLOR = "#000000"
 class Snake:
     def __init__(self):
         self.body_size = BODY_PARTS
-        self.coordinates = []
+        self.coordinates = [[0, 0] for _ in range(BODY_PARTS)]
         self.squares = []
-
-        for snake in range(0, BODY_PARTS):
-            self.coordinates.append([0, 0]) 
 
         for x, y in self.coordinates:
             square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_COLOR, tag="snake")
@@ -29,7 +26,6 @@ class Food:
             x = random.randint(0, (GAME_WIDTH // SPACE_SIZE) - 1) * SPACE_SIZE
             y = random.randint(0, (GAME_HEIGHT // SPACE_SIZE) - 1) * SPACE_SIZE
 
-            # ✅ Only break if not on the snake's body
             if [x, y] not in snake.coordinates:
                 break
 
@@ -38,9 +34,8 @@ class Food:
                            fill=FOOD_COLOR, tag="food")
 
 
-
 def next_turn(snake):
-    global food  
+    global food, score 
     x, y = snake.coordinates[0]
 
     if direction == "up":
@@ -58,11 +53,11 @@ def next_turn(snake):
     snake.squares.insert(0, square)
 
     if x == food.coordinates[0] and y == food.coordinates[1]:
-        global score
+    
         score += 1
         label.config(text=f"score: {score}")
 
-        canvas.delete("food")  # remove the old food
+        canvas.delete("food") 
         food = Food()   
 
     else:
@@ -70,7 +65,11 @@ def next_turn(snake):
         canvas.delete(snake.squares[-1])
         del snake.squares[-1]
 
-    window.after(SPEED, next_turn, snake)
+    if check_collisions():
+     game_over()
+    else:
+
+        window.after(SPEED, next_turn, snake)
 
 def change_direction(new_direction):
     global direction
@@ -91,7 +90,16 @@ def change_direction(new_direction):
 
 
 def check_collisions():
-    pass
+    x, y = snake.coordinates[0]
+
+    if x < 0 or x >= GAME_WIDTH or y < 0 or y >= GAME_HEIGHT:
+        return True
+    
+    if [x, y] in snake.coordinates[1:]:
+        return True
+
+    return False
+
 
 def game_over():
     pass
