@@ -163,6 +163,19 @@ def game_over():
     canvas.delete(ALL)
     canvas.create_text(canvas.winfo_width()/2, canvas.winfo_height()/2, font=('consolas', 70), text='GAME OVER', fill='red', tag="GAME OVER")
 
+def reset_game():
+    global snake, food, score, SPEED, obstacle, direction
+    canvas.delete(ALL)
+    score = 0 
+    SPEED = 100
+    direction ='down'
+    obstacle = []
+    label.config(text=f"{score} | High Score: {high_score}")
+    snake = Snake()
+    food = Food()
+    create_obstacle(5)
+    next_turn(snake)
+
 window = Tk()
 window.title("snake game")
 window.resizable(False, False)
