@@ -9,16 +9,12 @@ BODY_PARTS = 3
 SNAKE_COLOR = "#00FF00"
 FOOD_COLOR = "#FF0000"
 BACKGROUND_COLOR = "#000000"
-OBSTACLE_COLOR = "#808080"
+OBSTACLE_COLOR = "#474747"
 
 score = 0 
 high_score = 0
 direction = 'down'
 obstacle = []
-
-def get_random_color():
-        return f'#{random.randint(0, 0xFFFFFF):06x}'
-
 
 def get_random_color():
     return f'#{random.randint(0, 0xFFFFFF):06x}'
@@ -44,13 +40,25 @@ class Food:
         while True:
             x = random.randint(0, (GAME_WIDTH // SPACE_SIZE) - 1) * SPACE_SIZE
             y = random.randint(0, (GAME_HEIGHT // SPACE_SIZE) - 1) * SPACE_SIZE
+            valid_position = True
 
-            if [x, y] not in snake.coordinates:
+            for segment in snake.coordinates:
+                if [x, y] == segment:
+                    valid_position = False
+                    break
+
+            for block in obstacle:
+                if [x, y] == block:
+                    valid_position = False
+                    break
+
+            if valid_position:
                 break
 
         self.coordinates = [x, y]
         canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE,
                            fill=FOOD_COLOR, tag="food")
+
 
 def create_obstacle(count=5):
     global obstacles
@@ -78,23 +86,24 @@ def next_turn(snake):
     elif direction == "right":
         x += SPACE_SIZE
 
-    snake.coordinates.insert(0, (x, y))
+    new_head = [x, y]  
+    snake.coordinates.insert(0, new_head)
 
-    square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_COLOR)
+    square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE,
+                                     fill=SNAKE_COLOR)
     snake.squares.insert(0, square)
 
     if new_head == food.coordinates:
         score += 1 
         increases_difficulty()
-        label.config(text=f"Score: {score} | High Score: {high_score}"))
+        label.config(text=f"Score: {score} | High Score: {high_score}")
 
-    if x == food.coordinates[0] and y == food.coordinates[1]:
-    
+    if new_head == food.coordinates:  
         score += 1
-        label.config(text=f"score: {score}")
-
-        canvas.delete("food") 
-        food = Food()   
+        increases_difficulty()
+        label.config(text=f"Score: {score} | High Score: {high_score}")
+        canvas.delete("food")
+        food = Food()
 
     else:
         del snake.coordinates[-1]
@@ -137,6 +146,9 @@ def check_collisions():
     if [x, y] in snake.coordinates[1:]:
         return True
     
+    if [x, y] in obstacle:
+        return True 
+    
     for body_part in snake.coordinates[1:]:
         if x == body_part[0] and y == body_part[1]:
             print("GAME OVER")
@@ -145,6 +157,9 @@ def check_collisions():
     return False
 
 def game_over():
+    global high_score
+    if score > high_score:
+        high_score = score
     canvas.delete(ALL)
     canvas.create_text(canvas.winfo_width()/2, canvas.winfo_height()/2, font=('consolas', 70), text='GAME OVER', fill='red', tag="GAME OVER")
 
