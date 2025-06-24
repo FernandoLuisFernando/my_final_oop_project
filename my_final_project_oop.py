@@ -176,6 +176,17 @@ def reset_game():
     create_obstacle(5)
     next_turn(snake)
 
+    def show_menu():
+        global start_button, quit_button
+        label.config(text="Welcome to Snake!")
+        canvas.delete(ALL)
+        start_button = Button(window, text="Start", font=('consolas', 20), command=lambda: [start_button.destroy(), quit_button.destroy(), start_game()])
+        start_button.pack(pady=10)
+
+        quit_button = Button(window, text="Quit", font=('consolas, 20'), command=window.destroy)
+        quit_button.pack(pady=5)
+        
+
 window = Tk()
 window.title("snake game")
 window.resizable(False, False)
