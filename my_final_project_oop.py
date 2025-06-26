@@ -163,39 +163,6 @@ def game_over():
     canvas.delete(ALL)
     canvas.create_text(canvas.winfo_width()/2, canvas.winfo_height()/2, font=('consolas', 70), text='GAME OVER', fill='red', tag="GAME OVER")
 
-def reset_game():
-    global snake, food, score, SPEED, obstacle, direction
-    canvas.delete(ALL)
-    score = 0 
-    SPEED = 100
-    direction ='down'
-    obstacle = []
-    label.config(text=f"{score} | High Score: {high_score}")
-    snake = Snake()
-    food = Food()
-    create_obstacle(5)
-    next_turn(snake)
-
-def show_menu():
-    global start_button, quit_button
-    label.config(text="Welcome to Snake!")
-    canvas.delete(ALL)
-    start_button = Button(window, text="Start", font=('consolas', 20), command=lambda: [start_button.destroy(), quit_button.destroy(), start_game()])
-    start_button.pack(pady=10)
-
-    quit_button = Button(window, text="Quit", font=('consolas, 20'), command=window.destroy)
-    quit_button.pack(pady=5)
-
-def start_game():
-    global snake, food
-    label.config(text=f"Score: {score} | High Score: {high_score}")
-    snake = Snake()
-    food = Food()
-    create_obstacle(5)
-    next_turn(snake)
-        
-    
-
 window = Tk()
 window.title("snake game")
 window.resizable(False, False)
@@ -232,3 +199,4 @@ food = Food()
 next_turn(snake)
 
 window.mainloop()
+
